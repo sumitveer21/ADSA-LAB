@@ -1,10 +1,5 @@
 #include <stdio.h>
 
-typedef struct
-{
-    int low, high, state;
-} Node;
-
 void merge(int a[], int low, int mid, int high)
 {
     int b[100], i = low, j = mid + 1, k = low;
@@ -27,40 +22,21 @@ void merge(int a[], int low, int mid, int high)
         a[i] = b[i];
 }
 
-void mergeSortStack(int a[], int n)
+void mergeSortBottomUp(int a[], int n)
 {
-    Node stack[100];
-    int top = -1;
+    int size, low, mid, high;
 
-    stack[++top] = (Node){0, n - 1, 0};
-
-    while(top >= 0)
+    for(size = 1; size < n; size *= 2)
     {
-        int low = stack[top].low;
-        int high = stack[top].high;
-        int state = stack[top].state;
-        int mid = (low + high) / 2;
+        for(low = 0; low < n - size; low += 2 * size)
+        {
+            mid = low + size - 1;
+            high = low + 2 * size - 1;
 
-        if(low >= high)
-        {
-            top--;
-            continue;
-        }
+            if(high >= n)
+                high = n - 1;
 
-        if(state == 0)
-        {
-            stack[top].state = 1;
-            stack[++top] = (Node){low, mid, 0};
-        }
-        else if(state == 1)
-        {
-            stack[top].state = 2;
-            stack[++top] = (Node){mid + 1, high, 0};
-        }
-        else
-        {
             merge(a, low, mid, high);
-            top--;
         }
     }
 }
@@ -76,7 +52,7 @@ int main()
     for(i = 0; i < n; i++)
         scanf("%d", &a[i]);
 
-    mergeSortStack(a, n);
+    mergeSortBottomUp(a, n);
 
     printf("Sorted array: ");
     for(i = 0; i < n; i++)
